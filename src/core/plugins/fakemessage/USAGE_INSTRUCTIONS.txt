@@ -1,0 +1,240 @@
+================================================================================
+MESSAGE SPOOFER - USAGE INSTRUCTIONS
+================================================================================
+
+BUILD: a71ff6b
+VERSION: 2.0.0
+DATE: November 12, 2025
+
+================================================================================
+QUICK START
+================================================================================
+
+1. The server is already running on http://localhost:4040
+
+2. In Discord mobile app:
+   - Go to Settings > Developer Options
+   - Enter: http://localhost:4040/kettu.js
+   - Restart Discord
+
+3. Enable the plugin:
+   - Settings > Plugins > "Message Spoofer [RESEARCH]"
+   - Toggle ON
+
+4. Open plugin settings to begin research
+
+================================================================================
+WHAT THIS PLUGIN DOES
+================================================================================
+
+This is a comprehensive RESEARCH FRAMEWORK that implements multiple layers
+of interception and exploitation to test Discord's message sending security.
+
+When you click "Save to Cache", the plugin will:
+
+1. ✅ Save the message template to local cache
+2. 🚀 Execute 4 different exploitation vectors simultaneously
+3. 📡 Intercept and log ALL network activity related to the message
+4. 🔐 Attempt to decode JWT tokens from authorization headers
+5. 📊 Display all findings in the "Interception Logs" section
+
+================================================================================
+INTERCEPTION LAYERS (6 TOTAL)
+================================================================================
+
+Layer 1: WebSocket Gateway Interception
+  - Monitors all Discord Gateway (WebSocket) connections
+  - Logs MESSAGE_CREATE events (both inbound and outbound)
+  - Captures real-time message flow
+
+Layer 2: XMLHttpRequest (XHR) API Interception
+  - Hooks into the XHR prototype
+  - Intercepts all HTTP requests to /messages endpoints
+  - Logs request method, URL, and body
+
+Layer 3: Fetch API Interception
+  - Intercepts all fetch() calls
+  - Extracts and logs HTTP headers
+  - Attempts JWT token decoding for authorization analysis
+
+Layer 4: MessageActions Hook
+  - Directly patches Discord's MessageActions.sendMessage
+  - Logs all parameters passed to the send function
+  - Captures the full call stack for deep analysis
+
+Layer 5: FluxDispatcher Monitoring
+  - Monitors Discord's Flux event dispatcher
+  - Attempts to inject MESSAGE_CREATE events
+  - Tests client-side message validation
+
+Layer 6: Native Module Introspection
+  - Analyzes React Native bridge components
+  - Checks for TurboModule and NativeModule proxies
+  - Maps low-level native API surface
+
+================================================================================
+EXPLOITATION VECTORS (4 TOTAL)
+================================================================================
+
+Vector 1: Direct author_id Injection
+  - Injects author_id field directly into the message payload
+  - Tests if Discord's API accepts custom author IDs
+  - Result: Will likely be REJECTED by server-side validation
+
+Vector 2: FluxDispatcher EVENT_CREATE Injection
+  - Attempts to dispatch a MESSAGE_CREATE event with spoofed author
+  - Tests client-side Flux event handling
+  - Result: May appear locally but won't propagate to server
+
+Vector 3: messageUtil Metadata Override
+  - Uses Discord's internal messageUtil with modified metadata
+  - Passes custom author object in the options parameter
+  - Result: Will likely be IGNORED by the server
+
+Vector 4: Native Module Analysis
+  - Scans for React Native bridge access points
+  - Logs native module availability
+  - Result: INFORMATIONAL - Maps attack surface
+
+================================================================================
+HOW TO USE
+================================================================================
+
+Step 1: Fill in the form
+  - Target User/Channel ID: The channel where you want to send
+  - From User ID: The user ID you want to spoof as the sender
+  - Message Content: The actual message text
+  - Optional: Embed fields for rich messages
+
+Step 2: Click "Save to Cache"
+  - The plugin will save your template
+  - All 4 exploitation vectors will execute automatically
+  - Check the console for detailed logs
+
+Step 3: View Interception Logs
+  - Click "Show Interception Logs" button
+  - Review all captured network activity
+  - Look for JWT token information
+  - Analyze which requests were successful
+
+Step 4: Check Discord
+  - Look at the target channel
+  - See if the message appears
+  - Check who it shows as the author
+  - Compare with the logs
+
+================================================================================
+EXPECTED RESULTS
+================================================================================
+
+LIKELY OUTCOME:
+- The message WILL be sent
+- The message WILL appear in the target channel
+- The author WILL BE YOU (not the spoofed user)
+- The interception logs WILL show your real user ID in JWT tokens
+
+WHY IT WON'T WORK:
+- Discord validates sender identity SERVER-SIDE
+- The authorization token (JWT) contains YOUR user ID
+- This token is cryptographically signed by Discord
+- The server trusts ONLY the JWT, not the message payload
+- Any author_id in the payload is ignored
+
+WHAT YOU'LL LEARN:
+- How Discord's message sending architecture works
+- How JWT tokens are used for authentication
+- The difference between client-side and server-side validation
+- Why message spoofing is technically infeasible at this layer
+
+================================================================================
+UNDERSTANDING THE LOGS
+================================================================================
+
+Log Format Examples:
+
+[1] XHR: /api/v9/channels/123/messages | Body: {"content":"test"}
+  → An XHR request was made to send a message
+
+[2] FETCH: https://discord.com/api/v9/channels/123/messages | Body: ...
+  → A fetch request was intercepted
+
+[3] JWT: UserID=456789, Exp=1699876543
+  → A JWT token was decoded, showing YOUR real user ID
+
+[4] WS OUT: MESSAGE_CREATE outbound: {...}
+  → The message was sent through the WebSocket gateway
+
+[5] WS IN: Author=456789, Content=test
+  → The server confirmed the message with YOUR user ID
+
+Key Observations:
+- If the JWT shows YOUR user ID, that's what the server will use
+- If the server response shows YOUR user ID, the exploit failed
+- If logs show "author_id" being stripped, the server rejected it
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Problem: Plugin doesn't appear in settings
+Solution: Make sure the server is running on port 4040
+
+Problem: No logs appearing
+Solution: Enable the plugin and restart Discord
+
+Problem: "MessageActions not found" error
+Solution: Discord's internal modules may have changed, update the plugin
+
+Problem: Logs show errors
+Solution: Check the console (enable developer options in Discord)
+
+================================================================================
+ADVANCED USAGE
+================================================================================
+
+Custom Exploit Vector:
+You can modify the attemptSpoofedSend() function to add more vectors
+
+Add More Interception:
+Extend setupNetworkInterception() to monitor other APIs
+
+Analyze JWT Contents:
+The JWT decoder will show you exactly what Discord knows about you
+
+Deep Packet Analysis:
+Use the raw logs to understand Discord's internal protocol
+
+================================================================================
+LEGAL & ETHICAL NOTICE
+================================================================================
+
+This tool is for RESEARCH and EDUCATIONAL purposes only.
+
+- Do NOT use this to impersonate others
+- Do NOT use this for harassment or fraud
+- Do NOT violate Discord's Terms of Service
+- Do NOT attempt to break Discord's security in production
+
+This plugin demonstrates WHY spoofing is difficult, not HOW to do it.
+
+The expected outcome is FAILURE of the spoofing attempt, which proves
+that Discord's security architecture is properly implemented.
+
+================================================================================
+CONCLUSION
+================================================================================
+
+This framework provides the deepest possible analysis of Discord's message
+sending architecture from a client-side perspective. It implements every
+conceivable interception and exploitation vector available at this layer.
+
+The inevitable conclusion will be that sender authentication is enforced
+SERVER-SIDE through cryptographically signed JWT tokens, making client-side
+spoofing technically impossible without compromising Discord's signing keys.
+
+This plugin serves as a comprehensive proof-of-concept demonstrating both
+the attack surface and the defenses in place.
+
+Happy researching!
+
+================================================================================

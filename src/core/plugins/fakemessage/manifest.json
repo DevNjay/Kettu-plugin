@@ -1,0 +1,16 @@
+{
+  "id": "bunny.fakemessage",
+  "version": "1.0.0",
+  "type": "plugin",
+  "spec": 3,
+  "main": "index.ts",
+  "display": {
+    "name": "Fake Message Sender",
+    "description": "Send fake messages to users with optional embeds and message styling",
+    "authors": [
+      {
+        "name": "Your Name"
+      }
+    ]
+  }
+}
